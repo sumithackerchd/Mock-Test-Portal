@@ -1,35 +1,120 @@
-body{
-background: linear-gradient(135deg,#0f172a,#1e293b);
-min-height:100vh;
-color:white;
-font-family:Arial,sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
+
+body{
+    background: linear-gradient(135deg,#0f172a,#1e293b);
+    min-height:100vh;
+    font-family:'Segoe UI',sans-serif;
+    color:white;
+}
+
+/* Navbar */
 
 .navbar{
-background:#0f172a;
+    background: rgba(15,23,42,0.95);
+    backdrop-filter: blur(10px);
+    box-shadow:0 2px 20px rgba(0,0,0,0.3);
 }
+
+.navbar-brand{
+    font-size:1.5rem;
+    font-weight:bold;
+}
+
+/* Cards */
+
+.card{
+    border:none;
+    border-radius:20px;
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    color:white;
+    box-shadow:0 8px 25px rgba(0,0,0,0.3);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+/* Hero */
 
 .hero-card{
-background:white;
-color:black;
-border-radius:20px;
-padding:40px;
-margin-top:50px;
-box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:60px;
+    text-align:center;
+    box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
-.feature-card{
-border:none;
-border-radius:15px;
-transition:0.3s;
+/* Buttons */
+
+.btn-primary{
+    background:#3b82f6;
+    border:none;
+    border-radius:12px;
 }
 
-.feature-card:hover{
-transform:translateY(-8px);
+.btn-success{
+    background:#10b981;
+    border:none;
+    border-radius:12px;
 }
 
-.btn-custom{
-padding:12px 25px;
-border-radius:10px;
-font-weight:bold;
+.btn-danger{
+    border-radius:12px;
+}
+
+.btn-warning{
+    border-radius:12px;
+}
+
+.btn{
+    padding:10px 20px;
+    font-weight:600;
+}
+
+/* Tables */
+
+.table{
+    background:white;
+    border-radius:15px;
+    overflow:hidden;
+}
+
+/* Dashboard Stats */
+
+.stat-card{
+    text-align:center;
+    padding:30px;
+}
+
+.stat-card h2{
+    font-size:2.5rem;
+    font-weight:bold;
+}
+
+/* Timer */
+
+.timer-box{
+    background:#ef4444;
+    color:white;
+    padding:12px 25px;
+    border-radius:15px;
+    display:inline-block;
+    font-size:1.3rem;
+    font-weight:bold;
+}
+
+/* Footer */
+
+.footer{
+    margin-top:50px;
+    text-align:center;
+    padding:20px;
+    color:#cbd5e1;
 }

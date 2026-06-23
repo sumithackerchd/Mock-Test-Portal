@@ -118,7 +118,7 @@ def logout():
 
     session.clear()
 
-    return redirect("/")
+    return redirect("/admin_dashboard")
 # Add Category
 
 @app.route("/add_category", methods=["GET", "POST"])
@@ -418,5 +418,126 @@ def leaderboard():
         "leaderboard.html",
         leaders=leaders
     )
+
+# Admin Dashboard
+
+@app.route("/admin_dashboard")
+def admin_dashboard():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) FROM users")
+    total_users = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM tests")
+    total_tests = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM questions")
+    total_questions = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM results")
+    total_results = cursor.fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "admin_dashboard.html",
+        total_users=total_users,
+        total_tests=total_tests,
+        total_questions=total_questions,
+        total_results=total_results
+    )
+
+
+# View Students
+
+@app.route("/view_students")
+def view_students():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT id,name,email
+        FROM users
+        """
+    )
+
+    students = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "view_students.html",
+        students=students
+    )
+
+
+# View Results
+
+@app.route("/view_results")
+def view_results():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT users.name,
+               tests.test_name,
+               results.score
+        FROM results
+        JOIN users
+        ON results.user_id = users.id
+        JOIN tests
+        ON results.test_id = tests.id
+        """
+    )
+
+    results = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "view_results.html",
+        results=results
+    )
+
+
+# Delete Student
+
+@app.route("/delete_student/<int:id>")
+def delete_student(id):
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM users WHERE id=?",
+        (id,)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/view_students")
+
 if __name__ == "__main__":
     app.run(debug=True)
+
+
+    

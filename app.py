@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, redirect, session
+
+from flask import Flask,send_from_directory, render_template, request, redirect, session
 import sqlite3
+
 
 app = Flask(__name__)
 
@@ -106,7 +108,7 @@ def admin():
 
             session["admin"] = True
 
-            return redirect("/")
+            return redirect("/admin_dashboard")
 
     return render_template("admin_login.html")
 
@@ -536,6 +538,159 @@ def delete_student(id):
 
     return redirect("/view_students")
 
+# View Tests
+
+@app.route("/view_tests")
+def view_tests():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM tests")
+
+    tests = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "view_tests.html",
+        tests=tests
+    )
+
+
+# View Questions
+
+@app.route("/view_questions")
+def view_questions():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM questions")
+
+    questions = cursor.fetchall()
+
+    conn.close()
+
+    return render_template(
+        "view_questions.html",
+        questions=questions
+    )
+@app.route("/add_bulk_questions", methods=["GET","POST"])
+def add_bulk_questions():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM tests")
+    tests = cursor.fetchall()
+
+    if request.method == "POST":
+
+        test_id = request.form["test_id"]
+        questions_text = request.form["questions"]
+
+        lines = questions_text.strip().split("\n")
+
+        for line in lines:
+
+            data = line.split("|")
+
+            if len(data) == 6:
+
+                cursor.execute("""
+                INSERT INTO questions
+                (test_id, question, option1, option2, option3, option4, answer)
+                VALUES(?,?,?,?,?,?,?)
+                """,(
+                    test_id,
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4],
+                    data[5]
+                ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/admin_dashboard")
+
+    return render_template(
+        "bulk_questions.html",
+        tests=tests
+    )
+@app.route("/upload_excel", methods=["GET","POST"])
+def upload_excel():
+
+    if "admin" not in session:
+        return redirect("/admin")
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM tests")
+    tests = cursor.fetchall()
+
+    if request.method == "POST":
+
+        test_id = request.form["test_id"]
+
+        file = request.files["excel_file"]
+
+        df = pd.read_excel(file)
+
+        for index,row in df.iterrows():
+
+            cursor.execute("""
+            INSERT INTO questions
+            (
+            test_id,
+            question,
+            option1,
+            option2,
+            option3,
+            option4,
+            answer
+            )
+            VALUES(?,?,?,?,?,?,?)
+            """,(
+                test_id,
+                row["question"],
+                row["option1"],
+                row["option2"],
+                row["option3"],
+                row["option4"],
+                row["answer"]
+            ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/admin_dashboard")
+
+    return render_template(
+        "upload_excel.html",
+        tests=tests
+    )
+@app.route("/download_template")
+def download_template():
+
+    return send_from_directory(
+        "static",
+        "question_template.xlsx",
+        as_attachment=True
+    )
 if __name__ == "__main__":
     app.run(debug=True, port=5004)
 

@@ -37,8 +37,10 @@ body{
 }
 
 .card:hover{
-    transform:translateY(-8px);
+    transform:translateY(-10px) scale(1.03);
+    box-shadow:0 15px 40px rgba(59,130,246,0.35);
 }
+
 
 /* Hero */
 
@@ -117,4 +119,19 @@ body{
     text-align:center;
     padding:20px;
     color:#cbd5e1;
+}
+.progress{
+height:25px;
+border-radius:15px;
+overflow:hidden;
+}
+
+.form-check{
+padding:12px;
+border-radius:10px;
+transition:0.3s;
+}
+
+.form-check:hover{
+background:rgba(255,255,255,0.08);
 }

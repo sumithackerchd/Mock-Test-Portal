@@ -361,6 +361,11 @@ def result(test_id):
         score=score,
         total=total
     )
+
+
+
+
+
 # My Results
 
 @app.route("/my_results")

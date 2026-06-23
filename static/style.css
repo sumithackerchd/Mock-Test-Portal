@@ -1,0 +1,35 @@
+body{
+background: linear-gradient(135deg,#0f172a,#1e293b);
+min-height:100vh;
+color:white;
+font-family:Arial,sans-serif;
+}
+
+.navbar{
+background:#0f172a;
+}
+
+.hero-card{
+background:white;
+color:black;
+border-radius:20px;
+padding:40px;
+margin-top:50px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.feature-card{
+border:none;
+border-radius:15px;
+transition:0.3s;
+}
+
+.feature-card:hover{
+transform:translateY(-8px);
+}
+
+.btn-custom{
+padding:12px 25px;
+border-radius:10px;
+font-weight:bold;
+}

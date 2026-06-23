@@ -36,9 +36,79 @@ def home():
     return render_template("index.html")
 
 #password reset route
-@app.route("/forgot_password")
+
+@app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+
+        conn = sqlite3.connect("mocktest.db")
+        cursor = conn.cursor()
+
+        cursor.execute(
+            "SELECT * FROM users WHERE email=?",
+            (email,)
+        )
+
+        user = cursor.fetchone()
+
+        conn.close()
+
+        if not user:
+            return "Email Not Registered"
+
+        otp = random.randint(100000, 999999)
+
+        session["reset_otp"] = str(otp)
+        session["reset_email"] = email
+
+        msg = MIMEText(
+            f"Your ExamMaster Password Reset OTP is: {otp}"
+        )
+
+        msg["Subject"] = "ExamMaster Password Reset OTP"
+        msg["From"] = EMAIL_ADDRESS
+        msg["To"] = email
+
+        server = smtplib.SMTP(
+            "smtp.gmail.com",
+            587
+        )
+
+        server.starttls()
+
+        server.login(
+            EMAIL_ADDRESS,
+            EMAIL_PASSWORD
+        )
+
+        server.send_message(msg)
+
+        server.quit()
+
+        return redirect("/verify_otp")
+
     return render_template("forgot_password.html")
+
+#verify otp route
+
+@app.route("/verify_otp", methods=["GET", "POST"])
+def verify_otp():
+
+    if request.method == "POST":
+
+        otp = request.form["otp"]
+
+        if otp == session.get("reset_otp"):
+
+            return redirect("/reset_password")
+
+        return "Invalid OTP"
+
+    return render_template("verify_otp.html")
+
 
 #temp route to test email sending functionality
 
@@ -81,6 +151,7 @@ def test_email():
 # STUDENT REGISTER
 # ==========================
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
 
@@ -88,12 +159,17 @@ def register():
 
         name = request.form["name"]
         email = request.form["email"]
+        mobile = request.form["mobile"]
 
         password = generate_password_hash(
             request.form["password"]
         )
 
-        conn = sqlite3.connect("mocktest.db")
+        conn = sqlite3.connect(
+    "mocktest.db",
+    timeout=30,
+    check_same_thread=False
+)
         cursor = conn.cursor()
 
         cursor.execute(
@@ -116,12 +192,18 @@ def register():
         cursor.execute(
             """
             INSERT INTO users
-            (name,email,password)
-            VALUES(?,?,?)
+            (
+                name,
+                email,
+                mobile,
+                password
+            )
+            VALUES(?,?,?,?)
             """,
             (
                 name,
                 email,
+                mobile,
                 password
             )
         )
@@ -132,8 +214,24 @@ def register():
         return redirect("/login")
 
     return render_template("register.html")
+#=========================
+# All users route for debugging
+#=========================
+@app.route("/all_users")
+def all_users():
 
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
 
+    cursor.execute(
+        "SELECT id,name,email,mobile FROM users"
+    )
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return str(data)
 # ==========================
 # STUDENT LOGIN
 # ==========================
@@ -143,10 +241,13 @@ def login():
 
     if request.method == "POST":
 
-        email = request.form["email"]
+        username = request.form["username"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("mocktest.db")
+        conn = sqlite3.connect(
+    "mocktest.db",
+    timeout=30
+)
         cursor = conn.cursor()
 
         cursor.execute(
@@ -154,8 +255,12 @@ def login():
             SELECT *
             FROM users
             WHERE email=?
+            OR mobile=?
             """,
-            (email,)
+            (
+                username,
+                username
+            )
         )
 
         user = cursor.fetchone()
@@ -163,7 +268,7 @@ def login():
         conn.close()
 
         if user and check_password_hash(
-            user[3],
+            user[4],
             password
         ):
 
@@ -172,11 +277,28 @@ def login():
 
             return redirect("/dashboard")
 
-        return "Invalid Email or Password"
+        return "Invalid Email/Mobile or Password"
 
     return render_template("login.html")
 
 
+#=========================
+#check users route for debugging
+#=========================
+
+@app.route("/check_users")
+def check_users():
+
+    conn = sqlite3.connect("mocktest.db")
+    cursor = conn.cursor()
+
+    cursor.execute("PRAGMA table_info(users)")
+
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return str(data)
 # ==========================
 # DASHBOARD
 # ==========================
@@ -185,7 +307,12 @@ def login():
 def dashboard():
 
     if "user_id" not in session:
-        return redirect("/login")
+        return """
+<h2 style='color:green'>
+Registration Successful ✅
+</h2>
+<a href='/login'>Login Now</a>
+"""
 
     return render_template(
         "dashboard.html",

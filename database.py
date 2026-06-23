@@ -1,16 +1,18 @@
+
 import sqlite3
 
 conn = sqlite3.connect("mocktest.db")
 
 cursor = conn.cursor()
 
-# Students
+# Users
 
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     email TEXT UNIQUE,
+    mobile TEXT UNIQUE,
     password TEXT NOT NULL
 )
 """)

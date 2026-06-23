@@ -1,51 +1,159 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
 
 <title>Dashboard</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
 </head>
 
-<body class="bg-light">
+<body>
+
+<nav class="navbar navbar-dark navbar-expand-lg">
+
+<div class="container">
+
+<a class="navbar-brand" href="/">
+🎯 ExamMaster
+</a>
+
+<div>
+
+<span class="text-white me-3">
+👋 {{ name }}
+</span>
+
+<a href="/logout"
+class="btn btn-danger">
+Logout </a>
+
+</div>
+
+</div>
+
+</nav>
 
 <div class="container mt-5">
 
-<div class="card shadow p-5 text-center">
+<div class="hero-card text-center">
 
-<h1>
-Welcome {{ name }}
+<h1 class="display-5 fw-bold">
+👋 Welcome, {{ name }}
 </h1>
 
-<p class="mt-3">
-Ready to start your mock tests?
+<p class="lead mt-3">
+Ready to improve your score today?
 </p>
 
-<div class="mt-4">
+<p>
+Choose an option below and continue your preparation.
+</p>
+
+</div>
+
+<div class="row mt-5 g-4">
+
+<div class="col-md-6">
 
 <a href="/tests"
-class="btn btn-success">
-Available Tests
+style="text-decoration:none;">
+
+<div class="card p-5 text-center">
+
+<h2>📚</h2>
+
+<h4>Available Tests</h4>
+
+<p>
+Start practicing with mock tests.
+</p>
+
+</div>
+
 </a>
+
+</div>
+
+<div class="col-md-6">
+
 <a href="/my_results"
-class="btn btn-warning">
-📊 My Results
+style="text-decoration:none;">
+
+<div class="card p-5 text-center">
+
+<h2>📊</h2>
+
+<h4>My Results</h4>
+
+<p>
+Track your previous scores.
+</p>
+
+</div>
+
 </a>
+
+</div>
+
+<div class="col-md-6">
+
 <a href="/leaderboard"
-class="btn btn-success">
-🏆 Leaderboard
+style="text-decoration:none;">
+
+<div class="card p-5 text-center">
+
+<h2>🏆</h2>
+
+<h4>Leaderboard</h4>
+
+<p>
+Check top performing students.
+</p>
+
+</div>
+
 </a>
+
+</div>
+
+<div class="col-md-6">
+
 <a href="/logout"
-class="btn btn-danger">
-Logout
+style="text-decoration:none;">
+
+<div class="card p-5 text-center">
+
+<h2>🚪</h2>
+
+<h4>Logout</h4>
+
+<p>
+Sign out from your account.
+</p>
+
+</div>
+
 </a>
 
 </div>
 
 </div>
+
+<footer class="footer">
+
+<p>
+© 2026 ExamMaster | Built by Sumit Goswami
+</p>
+
+</footer>
 
 </div>
 
 </body>
+
 </html>

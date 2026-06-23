@@ -232,6 +232,65 @@ def all_users():
     conn.close()
 
     return str(data)
+
+#reset password route
+@app.route("/reset_password", methods=["GET", "POST"])
+def reset_password():
+
+    if request.method == "POST":
+
+        new_password = generate_password_hash(
+            request.form["password"]
+        )
+
+        email = session.get(
+            "reset_email"
+        )
+
+        conn = sqlite3.connect(
+            "mocktest.db"
+        )
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET password=?
+            WHERE email=?
+            """,
+            (
+                new_password,
+                email
+            )
+        )
+
+        conn.commit()
+        conn.close()
+
+        session.pop(
+            "reset_otp",
+            None
+        )
+
+        session.pop(
+            "reset_email",
+            None
+        )
+
+        return """
+        <h2 style='color:green'>
+        Password Reset Successful ✅
+        </h2>
+
+        <a href='/login'>
+        Login Now
+        </a>
+        """
+
+    return render_template(
+        "reset_password.html"
+    )
 # ==========================
 # STUDENT LOGIN
 # ==========================

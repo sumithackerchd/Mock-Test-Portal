@@ -1,5 +1,8 @@
-
 import sqlite3
+import smtplib
+import random
+
+from email.mime.text import MIMEText
 
 from flask import (
     Flask,
@@ -9,6 +12,11 @@ from flask import (
     session,
     send_from_directory
 )
+app = Flask(__name__)
+
+app.secret_key = "mocktest_secret"
+EMAIL_ADDRESS = "sumitgiri.chandausi@gmail.com"
+EMAIL_PASSWORD = "zvzzwpbkbwesrgrc"
 
 from werkzeug.security import (
     generate_password_hash,
@@ -27,7 +35,48 @@ app.secret_key = "mocktest_secret"
 def home():
     return render_template("index.html")
 
+#password reset route
+@app.route("/forgot_password")
+def forgot_password():
+    return render_template("forgot_password.html")
 
+#temp route to test email sending functionality
+
+@app.route("/test_email")
+def test_email():
+
+    otp = random.randint(
+        100000,
+        999999
+    )
+
+    msg = MIMEText(
+        f"Your OTP is {otp}"
+    )
+
+    msg["Subject"] = "ExamMaster OTP"
+
+    msg["From"] = EMAIL_ADDRESS
+
+    msg["To"] = EMAIL_ADDRESS
+
+    server = smtplib.SMTP(
+        "smtp.gmail.com",
+        587
+    )
+
+    server.starttls()
+
+    server.login(
+        EMAIL_ADDRESS,
+        EMAIL_PASSWORD
+    )
+
+    server.send_message(msg)
+
+    server.quit()
+
+    return "Email Sent"
 # ==========================
 # STUDENT REGISTER
 # ==========================
